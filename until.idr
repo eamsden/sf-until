@@ -15,3 +15,8 @@ data RType : Type where
 -- | An example which guarantees an infinite stream of unit events, each arriving in finite time after the next, punctuating unit "signals"
 exampleEventStream : RType
 exampleEventStream = mu (\r => finite () (times (once ()) r))
+
+-- | The type of a signal function
+(~>) : RType -> RType -> Type
+_ ~> _ = _|_
+
