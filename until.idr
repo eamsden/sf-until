@@ -5,8 +5,8 @@ module until
 
 -- | Reactive types describe the input and output of signal functions
 data RType : Type where
-  finite   : Type -> RType    -> RType
-  infinite : Type -> RType    -> RType
+  strong   : Type -> RType    -> RType
+  weak     : Type -> RType    -> RType
   once     : Type             -> RType
   plus     : RType -> RType   -> RType
   times    : RType -> RType   -> RType
