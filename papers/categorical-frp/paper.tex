@@ -4,20 +4,45 @@
 \author{Edward Amsden}
 \date{\today}
 
+\newcommand{\lambdacat}[0]{\mathcal{B}}
+\newcommand{\timecat}[0]{\mathcal{T}}
+\newcommand{\fancat}[0]{\lambdacat{}^\timecat{}}
+
 \begin{document}
 \maketitle
 
 \section{Introduction}
+\label{section:introduction}
 
 Functional Reactive Programming (FRP) is a promising concept which enables the compositional and equational construction and analysis of reactive systems. Recent work has applied basic concepts from category theory to show a Curry-Howard correspondence between Linear Temporal Logic and Functional Reactive Programming. The categorical equations used in these demonstrations capture precise notions of the modality of propositions in LTL and of types in FRP.
 
-FRP has been said to have ``resisted efficient implementation~\cite{Elliot}.'' In particular, most extant FRP implementations inhabit a spectrum in which pure semantic correctness and efficiency of implementation are opposed, and very few inhabit the parts of the spectrum nearest semantic correctness.
+FRP has been said to have ``resisted efficient implementation~\cite{Elliott}.'' In particular, most extant FRP implementations inhabit a spectrum in which pure semantic correctness and efficiency of implementation are opposed, and very few inhabit the parts of the spectrum nearest semantic correctness.
 
 The dichotomy may be falsified by demonstrating a way to derive efficient implementations rigorously from the semantic definitions of FRP. Therefore, once the semantics for FRP have been reviewed (Section~\ref{section:semantics}), a procedure for deriving implementations from the semantics is given (Section~\ref{section:derivation}), shown to produce efficient implemementations and justify optimizations (Section~\ref{section:efficiency}) and shown to be correct (Section~\ref{section:correctness}).
 
 \section{Review of Categorical Semantics for FRP}
 \label{section:semantics}
-There have been several presentations of categorical semantics for FRP~\cite{Jeffrey,Krishnaswami}. The clearest such explication~\cite{Jeltsch} denotes FRP types with objects in an exponential category from a simple category representing time to a Cartesian Closed Category with Coproduts (CCCC) representing the underlying functional language semantics. Objects from the CCCC can be lifted pointwise to objects (functors) in the exponential category. We can then define more interesting functors using these pointwise functors and products and coproducts from the CCCC. 
+There have been several presentations of categorical semantics for FRP~\cite{Jeffrey,Krishnaswami}. The clearest such explication~\cite{Jeltsch} denotes FRP types with objects in an exponential category from a simple category representing time to a Cartesian Closed Category with Coproducts (CCCC) representing the underlying functional language semantics. We denote this category $\fancat{}$, where $\timecat{}$ is the category representing time, and $\lambdacat{}$ is the CCCC representing non-temporal propositions or types. Objects from $\lambdacat{}$ can be lifted pointwise to objects (functors) in $\fancat{}$. We can then define more interesting functors using these pointwise functors and products and coproducts from $\lambdacat{}$. 
 
+
+\section{Derivation of an Implementation From Semantics}
+\label{section:derivation}
+
+Given a categorical equation for a family of temporal objects (LTL propositions or FRP types), the next step is to derive an implementation. In this case, we show how to embed these objects in $\lambdacat{}$ by showing how to use the definition of the family of objects in $\fancat$ to guide the construction of objects in $\lambdacat$. (We will prove the correctness of this derivation in Section~\ref{section:correctness}.)
+
+The key intuition to this derivation is that series products across time intervals (which represent continuities in time) can be projected from (sampled or pulled) but not injected into (notified or pushed). Conversely, series coproducts across time intervals (which represent discontinuities in time) can be injected into but not projected from. The relationship between products as functions and co-products as continutations is suggestive here, since pulling can be thought of as the consumer of a reactive value calling the function which produces it, while pushing can be thought of as the producer calling a continuation of the consumer.
+
+\section{Efficiency of Derived Implementations}
+\label{section:efficiency}
+
+TODO
+
+\section{Correctness of Derived Implementations}
+\label{section:correctness}
+
+TODO
+
+\bibliographystyle{acm}
+\bibliography{frp}
 
 \end{document}
