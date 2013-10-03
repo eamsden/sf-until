@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage{amsmath,amssymb}
 
 \title{Deriving Correct and Efficient FRP Implementations from Categorical Denotations}
 \author{Edward Amsden}
@@ -24,6 +25,12 @@ The dichotomy may be falsified by demonstrating a way to derive efficient implem
 \label{section:semantics}
 There have been several presentations of categorical semantics for FRP~\cite{Jeffrey,Krishnaswami}. The clearest such explication~\cite{Jeltsch} denotes FRP types with objects in an exponential category from a simple category representing time to a Cartesian Closed Category with Coproducts (CCCC) representing the underlying functional language semantics. We denote this category $\fancat{}$, where $\timecat{}$ is the category representing time, and $\lambdacat{}$ is the CCCC representing non-temporal propositions or types. Objects from $\lambdacat{}$ can be lifted pointwise to objects (functors) in $\fancat{}$. We can then define more interesting functors using these pointwise functors and products and coproducts from $\lambdacat{}$. 
 
+Equation~\ref{equation:always} gives a definition in $\fancat$ for the ``always'' operator ($\square$) from LTL, which corresponds to a ``behavior'' in Functional Reactive Programming.
+
+\begin{equation}
+\label{equation:always}
+\square\alpha (t) = \prod_{t' \in [t,\inf)} \alpha(t')
+\end{equation}
 
 \section{Derivation of an Implementation From Semantics}
 \label{section:derivation}
