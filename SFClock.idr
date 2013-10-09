@@ -28,12 +28,20 @@ clockSample {c=EvenlySpaced _} n t = Vect n t
 -- | Signal functions
 data SF : Clock -> SignalVector -> SignalVector -> Type where
   Pure     : (sampleType i -> sampleType o) -> SF clock i o
-  Stateful : a -> (Float -> sampleType i -> a -> (sampleType o, a)) -> SF clock i o
-  Clocked  : a -> ((s : clockStep clock) -> clockSample s (sampleType i) -> (clockSample s (sampleType o), a)) -> SF clock i o
+  Clocked  : a -> ((s : clockStep clock) -> clockSample s (sampleType i) -> a -> (clockSample s (sampleType o), a)) -> SF clock i o
+
+-- | Scans on vectors
+total scan : a -> (a -> b -> a) -> Vect n b -> (a, Vect n a)
+scan a _ [] = (a, [])
+scan a f (x::xs) = let
+                     b = f a x
+                   in let
+                        r = scan b f xs
+                      in (b, b::snd r)
 
 -- | Sampling a signal function
-sample : SF clock i o -> (s : clockStep clock) -> clockSample s (sampleType i) -> (clockSample s (sampleType o), SF clock i o)
+total sample : SF clock i o -> (s : clockStep clock) -> clockSample s (sampleType i) -> (clockSample s (sampleType o), SF clock i o)
 sample {clock=Whatever} (Pure f) step samp  = (f samp, (Pure f))
-sample {clock=Whatever} (Stateful acc stepper) step samp = let (out, acc') = stepper step samp acc in (out, Stateful acc' stepper)
-sample {clock=Whatever} sf step samp        = ?sampleWhatever
-sample {clock=EvenlySpaced td} sf step samp = ?sampleEvenlySpaced
+sample {clock=Whatever} (Clocked acc stepper) step samp = let (out, acc') = stepper step samp acc in (out, Clocked acc' stepper)
+sample {clock=EvenlySpaced td} (Pure f) step samp = (map f samp, (Pure f))
+sample {clock=EvenlySpaced td} (Clocked acc stepper) step samp = let (out, acc') = stepper step samp acc in (out, Clocked acc' stepper)
