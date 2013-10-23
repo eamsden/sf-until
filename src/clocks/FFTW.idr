@@ -1,5 +1,6 @@
 module FFTW
 
+import Prelude.Complex
 import DoublePtr
 import IO
 
@@ -13,7 +14,7 @@ natToInt (S n) = 1 + natToInt n
 data FftwElement = FftwComplex | FftwReal
 
 fftwElementRepr : FftwElement -> Type
-fftwElementRepr FftwComplex = (Float, Float)
+fftwElementRepr FftwComplex = Complex Float 
 fftwElementRepr FftwReal = Float
 
 data FftwBuffer : FftwElement -> Nat -> Type where
@@ -78,8 +79,8 @@ putDoubleVect p v = do
 readDoubleVect : Ptr -> IO (Vect n Float)
 readDoubleVect {n} p = traverse (\idx => do get_double p (natToInt idx)) (omega n)
 
-readComplexVect : Ptr -> IO (Vect n (Float, Float))
-readComplexVect {n} p = traverse (\idx => do x <- get_double p (natToInt idx) ; y <- get_double p (natToInt (S idx)) ; return (x, y)) (map (\x => x + x) (omega n))
+readComplexVect : Ptr -> IO (Vect n (Complex Float))
+readComplexVect {n} p = traverse (\idx => do x <- get_double p (natToInt idx) ; y <- get_double p (natToInt (S idx)) ; return (x:+y)) (map (\x => x + x) (omega n))
 
 runPlan : (p : FftwPlan n i o) -> Vect (n + n) (fftwElementRepr i) -> IO (Vect (S n) (fftwElementRepr o))
 runPlan (realComplexPlan bin bout ptr) vIn = do
