@@ -5,6 +5,8 @@ import Decidable.Equality
 import FFTW
 import Parity
 
+infixl 11 >>>
+
 -- | Protocol descriptors: Behaviors and their products
 data SignalVector : Type where
   B   : Type -> SignalVector
@@ -97,7 +99,9 @@ returnIO x = return x
 tryOldPlan : (s : Nat) -> (t ** FftwPlan t FftwReal FftwComplex) -> IO (FftwPlan s FftwReal FftwComplex)
 tryOldPlan s (t ** oldPlan) with (decEq s t)
   tryOldPlan t (t ** oldPlan) | (Yes sEqT) ?= returnIO oldPlan
-  tryOldPlan s _              | (No _)     = initRealComplexPlan s
+  tryOldPlan s (_ ** oldPlan) | (No _)     = do
+    destroyPlan oldPlan
+    initRealComplexPlan s
 
 fftw : {td : Float} -> SF (EvenlySpaced td) (B (p ** Vect p Float)) (B (q ** Vect q (Complex Float)))
 fftw = Clocked fftwStart (\(), winDP, mPlan => let (fftSize ** fftIn) = evenVector 0 winDP in let outSize = S fftSize in 
@@ -113,6 +117,12 @@ testFFTW : SF (EvenlySpaced td) (B Float) (B (q ** Vect q (Complex Float)))
 testFFTW = (>>>) (window 256) fftw
 
 ---------- Proofs ----------
+
+SFClock.tryOldPlan_lemma_1 = proof
+  intros
+  rewrite sym sEqT 
+  refine value
+
 
 SFClock.oddVectorToEvenVector_lemma_1 = proof
   intros

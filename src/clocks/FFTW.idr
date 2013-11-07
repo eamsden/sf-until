@@ -35,6 +35,12 @@ FFTW_ESTIMATE = 64
 fftw_malloc : Int -> IO Ptr
 fftw_malloc i = mkForeign (FFun "fftw_malloc" [FInt] FPtr) i
 
+fftw_destroy_plan : Ptr -> IO ()
+fftw_destroy_plan p = mkForeign (FFun "fftw_destroy_plan" [FPtr] FUnit) p
+
+fftw_free : Ptr -> IO ()
+fftw_free p = mkForeign (FFun "fftw_free" [FPtr] FUnit) p
+
 fftw_plan_dft_r2c_1d : Int -> Ptr -> Ptr -> Int -> IO Ptr
 fftw_plan_dft_r2c_1d n i o f = mkForeign (FFun "fftw_plan_dft_r2c_1d" [FInt, FPtr, FPtr, FInt] FPtr) n i o f
 
@@ -59,6 +65,12 @@ initRealComplexPlan n = do
   inBuf <- makeFftwBuffer FftwReal (n + n)
   outBuf <- makeFftwBuffer FftwComplex (S n)
   fftwPlanR2C inBuf outBuf
+
+destroyPlan : FftwPlan n i o -> IO ()
+destroyPlan (realComplexPlan (fftwBuffer ip) (fftwBuffer op) p) = do
+  fftw_destroy_plan p
+  fftw_free ip
+  fftw_free op
 
 omega : (n : Nat) -> Vect n Nat
 omega Z = []
